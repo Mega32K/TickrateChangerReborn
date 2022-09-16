@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.mega.something.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.mega.refmap.json",
+  "mixins": [
+    "LivingEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
