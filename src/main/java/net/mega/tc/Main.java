@@ -1,7 +1,10 @@
 package net.mega.tc;
 
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -10,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Mod(Main.MODID)
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Main {
     public static float PERCENT = 20F;
     public static double millisF = 0F;
@@ -49,6 +52,11 @@ public class Main {
         float p = PERCENT / 20.0F;
         millisF = p + millisF;
         millis = (long) millisF;
+    }
+
+    @SubscribeEvent
+    public static void onCommonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(Networking::registerMessage);
     }
 
     public static void changeAll(float percent) {

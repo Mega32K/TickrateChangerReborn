@@ -4,12 +4,15 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 @Mod.EventBusSubscriber
 public class TickrateCommand {
@@ -30,7 +33,11 @@ public class TickrateCommand {
         tick = Float.parseFloat(String.valueOf(tick));
         s.getSource().sendSuccess(new TextComponent("tickrate changed to ").append(new TextComponent(String.valueOf(tick))).withStyle(ChatFormatting.DARK_GRAY), false);
         Main.send(tick);
-        Main.changeAll(tick);
+        if (!s.getSource().getLevel().isClientSide) {
+            for (ServerPlayer player : s.getSource().getServer().getPlayerList().getPlayers()) {
+                Networking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new Networking(tick));
+            }
+        }
         return 0;
     }
 
